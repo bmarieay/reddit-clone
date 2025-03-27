@@ -2,16 +2,21 @@ import jwt from "jsonwebtoken";
 
 import User from "../models/user.model.js";
 import { userSchemaLoginValidation, userSchemaSignUpValidation } from "../utils/schemaValidations/user.validation.js";
+import ExpressError from "../utils/errors/ExpressError.js";
+import NotFoundEror from "../utils/errors/NotFoundError.js";
+import UnauthorizedError from "../utils/errors/UnauthorizedError.js";
 
+
+//protects the routes
 export const authenticateUser = async(req, res, next) => {
     const token = req.cookies._kt;
-    if(!token) return res.status(401).json({error: "No token"});
+    if(!token) return next(new UnauthorizedError("No valid token"));
 
     const isValidToken = jwt.verify(token, process.env.JWT_SECRET);
-    if(!isValidToken) return res.status(401).json({error: "No token"});
+    if(!isValidToken) return next(new UnauthorizedError("No valid token"));
 
     const user = await User.findById(isValidToken.userId).select("-password")
-    if(!user) return res.status(404).json({error: "User not found"});
+    if(!user) return next(new NotFoundEror("User can't be found"));
     req.user = user;
 
     next();
@@ -20,19 +25,16 @@ export const authenticateUser = async(req, res, next) => {
 
 export const validateuserBasedOnPath = path => {
     return (req, res, next) => {
-        //TODO: refactor 
+        let error = {}; 
         if(path === '/signup'){
-            const {error} = userSchemaSignUpValidation.validate(req.body);
-            if(error){
-                const errorMsg = error.details.map(e => e.message).join(', ');
-                return res.status(400).json({error: errorMsg});
-            }
+            ;({error} = userSchemaSignUpValidation.validate(req.body))
         } else if(path === '/login'){
-            const {error} = userSchemaLoginValidation.validate(req.body);
-            if(error){
-                const errorMsg = error.details.map(e => e.message).join(', ');
-                return res.status(400).json({error: errorMsg});
-            }
+            ;({error} = userSchemaSignUpValidation.validate(req.body))
+        }
+ 
+        if(error){
+            const errorMsg = error.details.map(e => e.message).join(', ');
+            throw new ExpressError(errorMsg);
         }
         next(); 
     }
