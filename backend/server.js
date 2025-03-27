@@ -6,10 +6,12 @@ import morgan from 'morgan';
 
 //utils
 import connectToMongoDB from './database/connectToMongoDB.js';
+import { finalErrorHandler, logError } from './middlewares/error.middleware.js';
 
 //routes
 import authRoutes from './routes/auth.route.js';
-import { finalErrorHandler, logError } from './middlewares/error.middleware.js';
+import subredditRoutes from './routes/subreddit.route.js';
+
 const PORT = process.env.PORT || 5000;
 
 dotenv.config();
@@ -22,6 +24,7 @@ app.use(morgan('dev'));
 
 //routes
 app.use('/auth', authRoutes);
+app.use('/r', subredditRoutes);
 
 //custom error handlers
 app.use(logError);

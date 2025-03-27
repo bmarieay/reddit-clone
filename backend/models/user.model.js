@@ -34,6 +34,10 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    belongsToSubreddit: {
+        type: Schema.Types.ObjectId,
+        ref: 'Subreddit'
     }
 }, {timestamps: true});
 
