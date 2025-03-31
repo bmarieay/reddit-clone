@@ -29,7 +29,7 @@ export const validateuserBasedOnPath = path => {
         if(path === '/signup'){
             ;({error} = userSchemaSignUpValidation.validate(req.body))
         } else if(path === '/login'){
-            ;({error} = userSchemaSignUpValidation.validate(req.body))
+            ;({error} = userSchemaLoginValidation.validate(req.body))
         }
  
         if(error){

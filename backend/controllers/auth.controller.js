@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 
 // 'auth/me'
 export const getMe = async(req, res) => {
-    //todo: add custom error handlers
     const user = await User.findById(req.user._id).select("-password");
     res.status(200).json(user);
 }

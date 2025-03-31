@@ -19,8 +19,13 @@ const subredditSchema = new Schema({
         type: String,
         required: true,
         enum: ['public', 'private']
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
-});
+}, {timestamps: true});
 
 const Subreddit = mongoose.model('subreddit', subredditSchema);
 export default Subreddit;

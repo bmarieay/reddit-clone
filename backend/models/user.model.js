@@ -35,10 +35,12 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    belongsToSubreddit: {
-        type: Schema.Types.ObjectId,
-        ref: 'Subreddit'
-    }
+    belongsToSubreddit: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Subreddit'
+        }
+    ]
 }, {timestamps: true});
 
 userSchema.statics.findAndValidate = async(username, password) => {

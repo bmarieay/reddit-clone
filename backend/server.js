@@ -11,6 +11,7 @@ import { finalErrorHandler, logError } from './middlewares/error.middleware.js';
 //routes
 import authRoutes from './routes/auth.route.js';
 import subredditRoutes from './routes/subreddit.route.js';
+import notificationRoutes from './routes/notification.route.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -25,6 +26,7 @@ app.use(morgan('dev'));
 //routes
 app.use('/auth', authRoutes);
 app.use('/r', subredditRoutes);
+app.use('/notifications', notificationRoutes);
 
 //custom error handlers
 app.use(logError);
