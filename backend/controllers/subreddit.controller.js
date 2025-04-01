@@ -1,5 +1,6 @@
 import Subreddit from "../models/subreddit.model.js";
 import User from "../models/user.model.js";
+import Post from "../models/post.model.js";
 import ExpressError from "../utils/errors/ExpressError.js";
 import NotFoundEror from "../utils/errors/NotFoundError.js";
 import UnauthorizedError from "../utils/errors//UnauthorizedError.js";
@@ -40,11 +41,17 @@ export const updateSubreddit = async(req, res) => {
     res.status(200).json(subreddit);
 }
 
+//todo: add a middleware for posts to auto populate when querying
 export const viewSubreddit = async(req, res) => {
     const {subreddit} = req.params;
     const matchingSubreddit = await Subreddit.findOne({title: subreddit});
     if(!matchingSubreddit ) throw new NotFoundEror(`Subreddit r/${subreddit} does not exist`);
-    res.status(200).json(matchingSubreddit);
+    const posts = await Post.find({subreddit: matchingSubreddit._id})
+    .populate({
+        path: "createdBy", model: User,
+        select: "username"
+    });
+    res.status(200).json({...matchingSubreddit._doc, posts});
 }
 
 //todo: maybe add db middleware when selecting user

@@ -25,10 +25,12 @@ const postSchema = new Schema({
         ref: 'Subreddit',
         required: true
     },
-    upVotes: {
-        type: Number,
-        default: 0
-    },
+    upVotes: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
     img: postImgSchema,
 }, {timestamps: true});
 
