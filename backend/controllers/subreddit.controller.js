@@ -12,7 +12,7 @@ export const createSubreddit = async(req, res) => {
     newSubreddit.members++;
     await User.findByIdAndUpdate(req.user._id, {$push: {belongsToSubreddit: newSubreddit._id}});
     await newSubreddit.save();
-    res.status(200).json({message: "Subreddit created successfully"});
+    res.status(201).json({message: "Subreddit created successfully"});
 }
 
 export const deleteSubreddit = async(req, res) => {
@@ -42,6 +42,7 @@ export const updateSubreddit = async(req, res) => {
 }
 
 //todo: add a middleware for posts to auto populate when querying
+//implement pagination
 export const viewSubreddit = async(req, res) => {
     const {subreddit} = req.params;
     const matchingSubreddit = await Subreddit.findOne({title: subreddit});

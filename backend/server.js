@@ -13,6 +13,7 @@ import authRoutes from './routes/auth.route.js';
 import subredditRoutes from './routes/subreddit.route.js';
 import notificationRoutes from './routes/notification.route.js';
 import postRoutes from './routes/post.route.js';
+import commentRoutes from './routes/comment.route.js';
 
 
 const PORT = process.env.PORT || 5000;
@@ -30,6 +31,7 @@ app.use('/auth', authRoutes);
 app.use('/r', subredditRoutes);
 app.use('/r/:subreddit', postRoutes);
 app.use('/notifications', notificationRoutes);
+app.use('/r/:subreddit/comments/:id/comment', commentRoutes);
 
 //custom error handlers
 app.use(logError);

@@ -12,7 +12,7 @@ import {    createSubreddit,
 const router = express.Router();
 
 router.route('/:subreddit')
-    //create a subreddit in server
+    //view a subreddit in server
     .get(catchAsyncError(viewSubreddit))
     //join or unjoin a subreddit
     .post(authenticateUser, catchAsyncError(joinUnjoinSubreddit));
