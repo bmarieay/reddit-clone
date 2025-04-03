@@ -29,7 +29,13 @@ export const viewPost = async(req, res) => {
     .populate({
         path: "subreddit", model: Subreddit,
         select: "title"
-    })
+    });
+    //find the parent comments
+    // const comments = Comment.find({post: foundPost._id})
+    // .populate({
+
+    // })
+
     // const baseUrl = url.format({
     //     protocol: req.protocol,
     //     hostname: req.hostname,

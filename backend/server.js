@@ -14,7 +14,7 @@ import subredditRoutes from './routes/subreddit.route.js';
 import notificationRoutes from './routes/notification.route.js';
 import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
-
+import userRoutes from './routes/user.route.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -28,6 +28,7 @@ app.use(morgan('dev'));
 
 //routes
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 app.use('/r', subredditRoutes);
 app.use('/r/:subreddit', postRoutes);
 app.use('/notifications', notificationRoutes);

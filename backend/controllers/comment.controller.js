@@ -40,9 +40,7 @@ export const replyToComment = async(req, res) => {
         commentator: req.user._id,
         parentComment: parentComment._id
     });
-    parentComment.replies.push(newComment);
     await newComment.save();
-    await parentComment.save();
     res.status(201).json(newComment);
 }
 
