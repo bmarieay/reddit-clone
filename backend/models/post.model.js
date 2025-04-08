@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import Vote from "./vote.model.js";
+import Comment from "./comment.model.js";
 const Schema = mongoose.Schema;
 
 const postImgSchema = new Schema({
@@ -25,14 +27,20 @@ const postSchema = new Schema({
         ref: 'Subreddit',
         required: true
     },
-    upVotes: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ],
     img: postImgSchema,
 }, {timestamps: true});
+
+//delete the votes linked to the post
+//delete the parent comments linked to the post
+postSchema.post('findOneAndDelete', async function(doc){
+    if(doc){
+        await Vote.deleteMany({
+            resourceId: doc._id,
+            resourceType: 'Post'
+        });
+        await Comment.deleteParentCommentAndChildren(doc._id);
+    }
+})
 
 const Post = mongoose.model('post', postSchema);
 export default Post;

@@ -38,7 +38,7 @@ router.route('/:commentId')
     catchAsyncError(deleteComment));
 
 //upvote/downvote
-router.post('/:commentId/upvoteDownvote', 
+router.post('/:commentId/vote', 
     authenticateUser, 
     validateParamsAndPost, 
     validateParamsAndComment,

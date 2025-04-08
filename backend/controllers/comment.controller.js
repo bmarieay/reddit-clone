@@ -1,7 +1,7 @@
 import Comment from "../models/comment.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
-import NotFoundEror from "../utils/errors/NotFoundError.js";
+import Vote from "../models/vote.model.js";
 
 
 export const createComment = async(req, res) => {
@@ -47,11 +47,29 @@ export const replyToComment = async(req, res) => {
 export const upvoteDownVoteComment = async(req, res) => {
     const {commentId} = req.params;
     const userId = req.user._id;
-    const comment = await Comment.findById(commentId);
-    const isUpvoted = comment.upVotes.includes(userId);
-
-    if(!isUpvoted) await Comment.findByIdAndUpdate(commentId, {$push: {upVotes: userId}});
-    else await Comment.findByIdAndUpdate(commentId, {$pull: {upVotes: userId}});
+    const isUpvoted = await Vote.findOne({
+        owner: userId, 
+        resourceType: "Comment", 
+        resourceId: commentId,  
+        voteType: "upvote"});
+        
+    if(!isUpvoted) {
+        const upVote = new Vote({
+            resourceType: "Comment", 
+            resourceId: commentId,
+            owner: userId,
+            voteType: "upvote"
+        });
+        await upVote.save();
+    } else {
+        const downVote = new Vote({
+            resourceType: "Comment", 
+            resourceId: commentId,
+            owner: userId,
+            voteType: "downvote"
+        });
+        await downVote.save();
+    }
 
     res.status(200).json({message: `Comment ${!isUpvoted ? "upvoted" : "dowvoted"}`});
 }

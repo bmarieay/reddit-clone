@@ -1,6 +1,8 @@
 import Post from "../models/post.model.js"
 import Subreddit from "../models/subreddit.model.js";
 import User from "../models/user.model.js";
+import Vote from "../models/vote.model.js";
+import Comment from "../models/comment.model.js";
 // import url from 'node:url';
 
 export const createPost = async(req, res) => {
@@ -21,6 +23,7 @@ export const createPost = async(req, res) => {
 
 export const viewPost = async(req, res) => {
     const {id} = req.params;
+    const {sort} = req.query;
     const foundPost = await Post.findById(id)
     .populate({
         path: "createdBy", model: User,
@@ -30,11 +33,18 @@ export const viewPost = async(req, res) => {
         path: "subreddit", model: Subreddit,
         select: "title"
     });
+    let filter = {createdAt: 1};
+    if(sort === 'top'){
+        filter.createdAt = -1;
+    }
     //find the parent comments
-    // const comments = Comment.find({post: foundPost._id})
-    // .populate({
+    const comments = await Comment.find({post: foundPost._id})
+    .populate({
+        path: "commentator", model: User,
+        select: "username"
+    }).sort(filter);
+    
 
-    // })
 
     // const baseUrl = url.format({
     //     protocol: req.protocol,
@@ -43,16 +53,35 @@ export const viewPost = async(req, res) => {
     // });
     // const fullUrl = `${baseUrl}/${foundPost.title}`
  
-    res.status(200).json(foundPost);
+    res.status(200).json({foundPost, comments});
 }
 
 export const upvoteDownvotePost = async(req, res) => {
     const {id: postId} = req.params;
-    const post = await Post.findById(postId);
     const userId = req.user._id;
-    const isUpvote = post.upVotes.includes(userId);
-    if(!isUpvote) await Post.findByIdAndUpdate(postId, {$push: {upVotes: userId}});
-    else await Post.findByIdAndUpdate(postId, {$pull: {upVotes: userId}});
+    const isUpvote = await Vote.findOne({
+        owner: userId, 
+        resourceType: "Post", 
+        resourceId: postId,  
+        voteType: "upvote"});
+
+    if(!isUpvote){
+        const upVote = new Vote({
+            resourceType: "Post", 
+            resourceId: postId,
+            owner: userId,
+            voteType: "upvote"
+        });
+        await upVote.save();
+    } else {
+        const downVote = new Vote({
+            resourceType: "Post", 
+            resourceId: postId,
+            owner: userId,
+            voteType: "downvote"
+        });
+        await downVote.save();
+    }
     res.status(201).json({message: `Post ${!isUpvote ? "upvoted" : "downvoted"}`}); 
 }
 
